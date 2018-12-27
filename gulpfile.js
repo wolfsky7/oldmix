@@ -18,26 +18,31 @@ gulp.task('clean', (cb) => {
   })
 })
 
-gulp.task('server', () => {
+gulp.task('server', (cb) => {
   connect.server({
     root: './dist',
     livereload: true
   })
+
+  cb()
 })
-gulp.task('reload', () => {
+gulp.task('reload', (cb) => {
   connect.reload()
+  cb()
 })
 
 Object.keys(tasks).forEach(key => {
   gulp.task(key, tasks[key].handler(gulp))
 })
 
-gulp.task('watch', () => {
+gulp.task('watch', (cb) => {
   Object.keys(tasks).forEach(key => {
-    gulp.watch(tasks[key].entry, [gulp.series(key, 'html', 'reload')])
+    gulp.watch(tasks[key].entry, gulp.series(key, 'html', 'reload'))
   })
+
+  cb()
 })
 
-// gulp.task('default',gulp.series('clean',gulp.parallel('css','img'),'html','server','watch'))
+gulp.task('default', gulp.series('clean', gulp.parallel('css', 'img', 'js', 'lib'), 'html', 'server', 'watch'))
 // gulp.task('default',gulp.series('clean'))
-exports.default = gulp.series('clean', 'img', 'css', 'lib', 'js', 'html')
+// exports.default = gulp.series('clean', 'img', 'css', 'lib', 'js', 'html')
